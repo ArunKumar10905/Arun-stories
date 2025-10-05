@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Story Website</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Welcome to Arun's Story Website</h1>
+            <p>Select your access level</p>
+        </header>
+        
+        <div class="access-options">
+            <div class="option-card" onclick="window.location.href='admin-login.html'">
+                <h2>Admin Access</h2>
+                <p>Login to manage stories</p>
+            </div>
+            
+            <div class="option-card" onclick="window.location.href='visitor.html'">
+                <h2>Visitor Access</h2>
+                <p>Read stories</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="sample-data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Story Reader - Public Access</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Story Reader</h1>
+            <button id="backBtn" class="back-btn">← Back to Stories</button>
+        </header>
+        
+        <div id="storyListSection">
+            <h2>Select a Story</h2>
+            <div id="storiesContainer">
+                <!-- Stories will be loaded here dynamically -->
+            </div>
+        </div>
+        
+        <div id="storyDetailSection" class="hidden">
+            <div class="story-header">
+                <h2 id="storyTitle"></h2>
+                <div class="language-selector">
+                    <label>Display Style:</label>
+                    <select id="languageSelector">
+                        <option value="english">Pure English</option>
+                        <option value="mixed">Mixed Language</option>
+                    </select>
+                </div>
+            </div>
+            <div id="storyContent" class="story-content"></div>
+        </div>
+    </div>
+    
+    <script src="visitor.js"></script>
+</body>
+</html>
