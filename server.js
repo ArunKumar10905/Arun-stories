@@ -7,7 +7,15 @@ const PORT = 8001;
 app.use(express.json());
 app.use(express.static('public'));
 
-// In-memory storage for stories (in production, you would use a database)
+// Add CORS headers
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
+
+// In-memory storage for stories and reviews (in production, you would use a database)
 let stories = [
   {
     id: '1',
@@ -31,6 +39,12 @@ let stories = [
     createdAt: new Date().toISOString()
   }
 ];
+
+// In-memory storage for reviews
+let reviews = [];
+
+// In-memory storage for admin notifications
+let adminNotifications = [];
 
 // Routes
 app.get('/api/stories', (req, res) => {
@@ -99,7 +113,71 @@ app.delete('/api/stories/:id', (req, res) => {
   }
   
   stories.splice(storyIndex, 1);
-  res.status(200).json({ message: 'Story deleted successfully' });
+  // Send a simple success response without JSON for DELETE
+  res.status(204).send();
+});
+
+// Review routes
+app.get('/api/stories/:id/reviews', (req, res) => {
+  const storyReviews = reviews.filter(review => review.storyId === req.params.id);
+  res.json(storyReviews);
+});
+
+app.post('/api/stories/:id/reviews', (req, res) => {
+  const { rating, comment } = req.body;
+  const storyId = req.params.id;
+  
+  // Validate rating
+  if (!rating || rating < 1 || rating > 5) {
+    return res.status(400).json({ message: 'Rating must be between 1 and 5' });
+  }
+  
+  // Check if story exists
+  const story = stories.find(s => s.id === storyId);
+  if (!story) {
+    return res.status(404).json({ message: 'Story not found' });
+  }
+  
+  const newReview = {
+    id: Date.now().toString(),
+    storyId,
+    rating: parseInt(rating),
+    comment: comment || '',
+    createdAt: new Date().toISOString()
+  };
+  
+  reviews.push(newReview);
+  
+  // Create admin notification
+  const notification = {
+    id: Date.now().toString(),
+    type: 'review',
+    message: `New ${rating}-star review for story "${story.title}"`,
+    storyTitle: story.title,
+    rating,
+    comment: comment || '',
+    createdAt: new Date().toISOString(),
+    read: false
+  };
+  
+  adminNotifications.push(notification);
+  
+  res.status(201).json(newReview);
+});
+
+// Admin notification routes
+app.get('/api/admin/notifications', (req, res) => {
+  res.json(adminNotifications);
+});
+
+app.put('/api/admin/notifications/:id/read', (req, res) => {
+  const notification = adminNotifications.find(n => n.id === req.params.id);
+  if (!notification) {
+    return res.status(404).json({ message: 'Notification not found' });
+  }
+  
+  notification.read = true;
+  res.json(notification);
 });
 
 // Serve frontend files

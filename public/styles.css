@@ -68,6 +68,13 @@ h2::after {
     border-radius: 3px;
 }
 
+h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
 /* Homepage Styles */
 .access-options {
     display: flex;
@@ -220,7 +227,7 @@ button:hover {
 }
 
 /* Editor Styles */
-.editor-section, .stories-section {
+.editor-section, .stories-section, .notifications-panel {
     background: white;
     padding: 30px;
     border-radius: 15px;
@@ -230,7 +237,7 @@ button:hover {
     border: 1px solid #eee;
 }
 
-.editor-section::before, .stories-section::before {
+.editor-section::before, .stories-section::before, .notifications-panel::before {
     content: "";
     position: absolute;
     top: 0;
@@ -239,6 +246,10 @@ button:hover {
     height: 5px;
     background: linear-gradient(90deg, #3498db, #9b59b6);
     border-radius: 15px 15px 0 0;
+}
+
+.notifications-panel::before {
+    background: linear-gradient(90deg, #9b59b6, #e74c3c);
 }
 
 .form-actions {
@@ -313,6 +324,47 @@ button:hover {
     font-style: italic;
 }
 
+/* Notification Styles */
+.notification-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.notification-item.unread {
+    background-color: #e3f2fd;
+    border-left: 4px solid #3498db;
+}
+
+.notification-content {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.notification-title {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.notification-message {
+    font-weight: 500;
+}
+
+.notification-details {
+    font-size: 0.9rem;
+    color: #555;
+    margin-top: 5px;
+}
+
+.notification-time {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    margin-top: 5px;
+}
+
 /* Visitor Styles */
 .hidden {
     display: none;
@@ -352,6 +404,80 @@ button:hover {
     line-height: 1.8;
     font-size: 1.1rem;
     border: 1px solid #eee;
+    margin-bottom: 30px;
+}
+
+/* Review Styles */
+.review-section {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+}
+
+.rating-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.stars {
+    font-size: 2.5rem;
+    color: #ddd;
+    cursor: pointer;
+}
+
+.star {
+    transition: color 0.2s ease;
+    user-select: none;
+}
+
+.star:hover,
+.star.highlight,
+.star.selected {
+    color: #f39c12;
+}
+
+#ratingText {
+    margin-top: 10px;
+    font-weight: 500;
+    color: #7f8c8d;
+}
+
+.review-form textarea {
+    width: 100%;
+    min-height: 100px;
+    margin-bottom: 15px;
+    padding: 12px;
+    border: 2px solid #e1e8ed;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 16px;
+}
+
+.review-form button {
+    width: auto;
+    padding: 12px 25px;
+}
+
+.review-message {
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 15px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.review-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.review-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
 }
 
 /* Responsive Design */
@@ -385,7 +511,7 @@ button:hover {
         width: 95%;
     }
     
-    .editor-section, .stories-section {
+    .editor-section, .stories-section, .notifications-panel {
         padding: 20px;
     }
     
@@ -404,6 +530,10 @@ button:hover {
     
     button {
         padding: 12px;
+    }
+    
+    .stars {
+        font-size: 2rem;
     }
 }
 

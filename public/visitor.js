@@ -12,8 +12,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const languageSelector = document.getElementById('languageSelector');
     const backBtn = document.getElementById('backBtn');
     
+    // Review elements
+    const stars = document.querySelectorAll('.star');
+    const ratingText = document.getElementById('ratingText');
+    const reviewComment = document.getElementById('reviewComment');
+    const submitReview = document.getElementById('submitReview');
+    const reviewMessage = document.getElementById('reviewMessage');
+    
     // Current story data
     let currentStory = null;
+    let selectedRating = 0;
     
     // Load stories on page load
     loadStories();
@@ -31,10 +39,74 @@ document.addEventListener('DOMContentLoaded', function() {
         storyDetailSection.classList.add('hidden');
     });
     
+    // Star rating functionality
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            selectedRating = parseInt(this.getAttribute('data-rating'));
+            updateStars(selectedRating);
+            ratingText.textContent = getRatingText(selectedRating);
+        });
+        
+        star.addEventListener('mouseover', function() {
+            const rating = parseInt(this.getAttribute('data-rating'));
+            highlightStars(rating);
+        });
+        
+        star.addEventListener('mouseout', function() {
+            highlightStars(selectedRating);
+        });
+    });
+    
+    // Submit review
+    submitReview.addEventListener('click', function() {
+        if (!currentStory) return;
+        
+        if (selectedRating === 0) {
+            showMessage('Please select a rating', 'error');
+            return;
+        }
+        
+        const reviewData = {
+            rating: selectedRating,
+            comment: reviewComment.value.trim()
+        };
+        
+        fetch(`${API_BASE}/stories/${currentStory.id}/reviews`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(reviewData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Failed to submit review: ${response.status} ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(() => {
+            showMessage('Thank you for your review! Your feedback has been sent to the admin.', 'success');
+            // Reset form
+            selectedRating = 0;
+            updateStars(0);
+            ratingText.textContent = 'Select a rating';
+            reviewComment.value = '';
+        })
+        .catch(error => {
+            console.error('Error submitting review:', error);
+            showMessage(`Error submitting review: ${error.message}`, 'error');
+        });
+    });
+    
     // Load stories from backend
     function loadStories() {
         fetch(`${API_BASE}/stories`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Failed to load stories: ${response.status} ${response.statusText}`);
+                }
+                return response.json();
+            })
             .then(stories => {
                 storiesContainer.innerHTML = '';
                 
@@ -62,13 +134,26 @@ document.addEventListener('DOMContentLoaded', function() {
     // View a story
     window.viewStory = function(storyId) {
         fetch(`${API_BASE}/stories/${storyId}`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Failed to load story: ${response.status} ${response.statusText}`);
+                }
+                return response.json();
+            })
             .then(story => {
                 currentStory = story;
                 storyTitle.textContent = story.title;
                 displayStoryContent();
                 storyListSection.classList.add('hidden');
                 storyDetailSection.classList.remove('hidden');
+                
+                // Reset review form
+                selectedRating = 0;
+                updateStars(0);
+                ratingText.textContent = 'Select a rating';
+                reviewComment.value = '';
+                reviewMessage.textContent = '';
+                reviewMessage.className = 'review-message';
             })
             .catch(error => {
                 console.error('Error loading story:', error);
@@ -92,6 +177,46 @@ document.addEventListener('DOMContentLoaded', function() {
             // Use English content
             storyContent.textContent = currentStory.content;
         }
+    }
+    
+    // Update star display
+    function updateStars(rating) {
+        stars.forEach((star, index) => {
+            if (index < rating) {
+                star.classList.add('selected');
+            } else {
+                star.classList.remove('selected');
+            }
+        });
+    }
+    
+    // Highlight stars on hover
+    function highlightStars(rating) {
+        stars.forEach((star, index) => {
+            if (index < rating) {
+                star.classList.add('highlight');
+            } else {
+                star.classList.remove('highlight');
+            }
+        });
+    }
+    
+    // Get rating text
+    function getRatingText(rating) {
+        const texts = {
+            1: 'Poor',
+            2: 'Fair',
+            3: 'Good',
+            4: 'Very Good',
+            5: 'Excellent'
+        };
+        return texts[rating] || 'Select a rating';
+    }
+    
+    // Show message
+    function showMessage(message, type) {
+        reviewMessage.textContent = message;
+        reviewMessage.className = `review-message ${type}`;
     }
     
     // Convert English text to mixed language (English + Hindi)
